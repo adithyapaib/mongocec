@@ -1,39 +1,129 @@
-const mongoose = require('mongoose'); // Mongoose for MongoDB interactions
+const express = require('express');
+const app = express();
+const mongoose = require('mongoose');
 
 
-const DATABASE = `cec`;
-const COLLECTION = `users`;
+mongoose.connect('mongodb://localhost:27017/crudapp').then(() => { console.log('Connected to MongoDB') });
 
-// Connecting to MongoDB
-mongoose.connect('mongodb://localhost:27017/'+DATABASE).then(() =>  console.log('Connected to MongoDB'));
-
-
-// Defining a schema for the 'User' model
-// A user has a 'name' and an 'age', both fields are required
 const userSchema = new mongoose.Schema({
-    name: String,
-    age: Number
+    rollno: {
+        type: String,
+        required: true,
+        unique: true
+    },
+    name: {
+        type: String,
+        required: true
+    },
+    age: {
+        type: Number,
+        required: true
+    },
+    email: {
+        type: String,
+        required: true
+    },
+    profilepic: {
+        type: String,
+        default: 'https://robohash.org/paiadithya26@gmail.com'
+    }
+}, {
+    strict: true
 });
 
-// Creating a model for the 'User' schema
-const User = mongoose.model(COLLECTION, userSchema);
+const User = mongoose.model('userinfo', userSchema);
 
 
-// 3. DELETE query
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use(express.static('public'));
 
-User.create({name: 'John', age: 25}).then((result) => { console.log(result);});
-User.create({name: 'Jane', age: 30}).then((result) => { console.log(result);});
-User.create({name: 'Doe', age: 60}).then((result) => { console.log(result);});
+app.get('/', (req, res) => {
+    res.send(__dirname + '/public/index.html');
+}
+);
 
-// Deleting the user with the name 'John'
-//User.deleteOne({name: 'John'}).then((result) =>  console.log(result));
+app.get('/all', (req, res) => {
+    User.find().then((users) => {
+        // send json response
+        res.json(users);
+    });
+}
+);
 
-// Deleting the user with the name 'Jane'
-//User.deleteOne({name: 'Jane'}).then((result) =>  console.log(result)); 
+app.post('/create', (req, res) => {
+    let profilepic = req.body.profilepic;
+    if (req.body.profilepic == '') {
+        profilepic = 'https://robohash.org/' + req.body.email;
+    }
+    const user = new User({
+        name: req.body.name,
+        age: req.body.age,
+        rollno: req.body.rollno,
+        email: req.body.email,
+        profilepic: profilepic
+    });
 
-// Delet Age 25
+    user.save().then(() => {
+        res.redirect(`/?message=Success Inserted&name=` + req.body.name + `&age=` + req.body.age + `&rollno=` + req.body.rollno + `&email=` + req.body.email + `&profilepic=` + profilepic + `&operation=CREATED`);
+    }).catch((err) => {
+        res.redirect(`/?error=Error Inserting ${req.body.name}; Duplicate ID`);
+    });
+}
+);
 
-//User.deleteOne({age: 30}).then((result) =>  console.log(result));
+app.post('/read', (req, res) => {
+    User.find({ rollno: req.body.rollno }).then((users) => {
+        // if user not found
+        if (users.length == 0) {
+            res.redirect(`/?error=No user found with rollno ${req.body.rollno}` + `&operation=read`);
+        }
+        else {
+            res.redirect(`/?message=Success Found&name=` + users[0].name + `&age=` + users[0].age + `&rollno=` + users[0].rollno + `&email=` + users[0].email + `&profilepic=` + users[0].profilepic + `&operation=READ`);
+        }
+    });
+}
+);
 
-// Deleting users with age greater than 40
-//User.deleteMany({age: {$gt: 40}}).then((result) =>  console.log(result));
+app.post('/delete', (req, res) => {
+    // Check if roll no exists 
+    User.find({ rollno: req.body.rollno }).then((users) => {
+        if (users.length == 0) {
+            res.redirect(`/?error=No user found with rollno ${req.body.rollno}`);
+        }
+        else {
+            User.deleteOne({ rollno: req.body.rollno }).then(() => {
+                res.redirect(`/?message=Success Deleted&name=` + users[0].name + `&age=` + users[0].age + `&rollno=` + users[0].rollno + `&email=` + users[0].email + `&profilepic=` + users[0].profilepic + `&operation=Deleted`);
+            });
+        }
+    });
+
+});
+
+app.post('/update', (req, res) => {
+    User.find({ rollno: req.body.rollno }).then((users) => {
+        if (users.length == 0) {
+            res.redirect(`/?error=No user found with rollno ${req.body.rollno}`);
+        }
+        else {
+            let profilepic = req.body.profilepic;
+            if (req.body.profilepic == '') {
+                profilepic = 'https://robohash.org/' + req.body.email;
+            }
+
+            User.updateOne({ rollno: req.body.rollno }, {
+                name: req.body.name,
+                age: req.body.age,
+                rollno: req.body.rollno,
+                email: req.body.email,
+                profilepic: profilepic
+            }).then(() => {
+                res.redirect(`/?message=Success Updated&name=` + req.body.name + `&age=` + req.body.age + `&rollno=` + req.body.rollno + `&email=` + req.body.email + `&profilepic=` + req.body.profilepic + `&operation=Updated`);
+            });
+        }
+    });
+}
+);
+
+app.listen(3000, () => { console.log('Server is running on port 3000')});
+

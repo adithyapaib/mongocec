@@ -17,126 +17,375 @@ This repository contains the code for a workshop on Mongoose and Express JS. The
 - [CODE](#installation)
 - [License](#license)
 
-# 3. DELETE Operation
+# 4. Project
 
-- Model.deleteOne() - Deletes the first document that matches the filter
-- Model.deleteMany() - Deletes all documents that match the filter
-
-
-```javascript
-// Delete the user with name 'Sachin'
-User.deleteOne({name: 'Sachin'}).then((result) => { console.log(result);} );
-
-// Delete all users with age 30
-User.deleteMany({age: 30}).then((result) => { console.log(result);} );
-
-
-```
+- A simple CRUD App using Mongoose and MongoDB
 
 
 
-## CODE USED FOR SECTION 3
+
+## CODE USED FOR SECTION 4
 - index.js
 
 ```javascript
-const mongoose = require('mongoose'); // Mongoose for MongoDB interactions
+const express = require('express');
+const app = express();
+const mongoose = require('mongoose');
 
 
-const DATABASE = `cec`;
-const COLLECTION = `users`;
+mongoose.connect('mongodb://localhost:27017/crudapp').then(() => { console.log('Connected to MongoDB') });
 
-// Connecting to MongoDB
-mongoose.connect('mongodb://localhost:27017/'+DATABASE).then(() =>  console.log('Connected to MongoDB'));
-
-
-// Defining a schema for the 'User' model
-// A user has a 'name' and an 'age', both fields are required
 const userSchema = new mongoose.Schema({
-    name: String,
-    age: Number
+    rollno: {
+        type: String,
+        required: true,
+        unique: true
+    },
+    name: {
+        type: String,
+        required: true
+    },
+    age: {
+        type: Number,
+        required: true
+    },
+    email: {
+        type: String,
+        required: true
+    },
+    profilepic: {
+        type: String,
+        default: 'https://robohash.org/paiadithya26@gmail.com'
+    }
+}, {
+    strict: true
 });
 
-// Creating a model for the 'User' schema
-const User = mongoose.model(COLLECTION, userSchema);
+const User = mongoose.model('userinfo', userSchema);
 
 
-// 3. DELETE query
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use(express.static('public'));
 
-User.create({name: 'John', age: 25}).then((result) => { console.log(result);});
-User.create({name: 'Jane', age: 30}).then((result) => { console.log(result);});
-User.create({name: 'Doe', age: 60}).then((result) => { console.log(result);});
+app.get('/', (req, res) => {
+    res.send(__dirname + '/public/index.html');
+}
+);
 
-// Deleting the user with the name 'John'
-//User.deleteOne({name: 'John'}).then((result) =>  console.log(result));
+app.get('/all', (req, res) => {
+    User.find().then((users) => {
+        // send json response
+        res.json(users);
+    });
+}
+);
 
-// Deleting the user with the name 'Jane'
-//User.deleteOne({name: 'Jane'}).then((result) =>  console.log(result)); 
+app.post('/create', (req, res) => {
+    let profilepic = req.body.profilepic;
+    if (req.body.profilepic == '') {
+        profilepic = 'https://robohash.org/' + req.body.email;
+    }
+    const user = new User({
+        name: req.body.name,
+        age: req.body.age,
+        rollno: req.body.rollno,
+        email: req.body.email,
+        profilepic: profilepic
+    });
 
-// Delete one person Age 30
+    user.save().then(() => {
+        res.redirect(`/?message=Success Inserted&name=` + req.body.name + `&age=` + req.body.age + `&rollno=` + req.body.rollno + `&email=` + req.body.email + `&profilepic=` + profilepic + `&operation=CREATED`);
+    }).catch((err) => {
+        res.redirect(`/?error=Error Inserting ${req.body.name}; Duplicate ID`);
+    });
+}
+);
 
-//User.deleteOne({age: 30}).then((result) =>  console.log(result));
+app.post('/read', (req, res) => {
+    User.find({ rollno: req.body.rollno }).then((users) => {
+        // if user not found
+        if (users.length == 0) {
+            res.redirect(`/?error=No user found with rollno ${req.body.rollno}` + `&operation=read`);
+        }
+        else {
+            res.redirect(`/?message=Success Found&name=` + users[0].name + `&age=` + users[0].age + `&rollno=` + users[0].rollno + `&email=` + users[0].email + `&profilepic=` + users[0].profilepic + `&operation=READ`);
+        }
+    });
+}
+);
 
-// Deleting users with age greater than 40
-//User.deleteMany({age: {$gt: 40}}).then((result) =>  console.log(result));
+app.post('/delete', (req, res) => {
+    // Check if roll no exists 
+    User.find({ rollno: req.body.rollno }).then((users) => {
+        if (users.length == 0) {
+            res.redirect(`/?error=No user found with rollno ${req.body.rollno}`);
+        }
+        else {
+            User.deleteOne({ rollno: req.body.rollno }).then(() => {
+                res.redirect(`/?message=Success Deleted&name=` + users[0].name + `&age=` + users[0].age + `&rollno=` + users[0].rollno + `&email=` + users[0].email + `&profilepic=` + users[0].profilepic + `&operation=Deleted`);
+            });
+        }
+    });
+
+});
+
+app.post('/update', (req, res) => {
+    User.find({ rollno: req.body.rollno }).then((users) => {
+        if (users.length == 0) {
+            res.redirect(`/?error=No user found with rollno ${req.body.rollno}`);
+        }
+        else {
+            let profilepic = req.body.profilepic;
+            if (req.body.profilepic == '') {
+                profilepic = 'https://robohash.org/' + req.body.email;
+            }
+
+            User.updateOne({ rollno: req.body.rollno }, {
+                name: req.body.name,
+                age: req.body.age,
+                rollno: req.body.rollno,
+                email: req.body.email,
+                profilepic: profilepic
+            }).then(() => {
+                res.redirect(`/?message=Success Updated&name=` + req.body.name + `&age=` + req.body.age + `&rollno=` + req.body.rollno + `&email=` + req.body.email + `&profilepic=` + req.body.profilepic + `&operation=Updated`);
+            });
+        }
+    });
+}
+);
+
+app.listen(3000, () => { console.log('Server is running on port 3000')});
 
 ```   
+- index.html
+``` html
+
+<!--
+This is the main HTML file for the CRUD operations application.
+
+It contains the following sections:
+- Metadata and title
+- Stylesheet link
+- Message section
+- Data input textarea
+- CRUD operations section (Create, Read, Update, Delete)
+- All Data section (table to display data)
+- JavaScript code to fetch data and handle URL parameters
+
+Please note that this is a static HTML file and requires a server-side implementation to handle the CRUD operations and data storage.
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CRUD OPPERTATIONS</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Message Section -->
+    <section class="msg"> 
+    </section>
+
+    <!-- Data Input Textarea -->
+    <fieldset id="data">
+        <legend>LOG</legend>
+    </fieldset>
+
+    <!-- CRUD Operations Section -->
+    <div class="operations">
+        <!-- Create Operation -->
+        <div class="create">
+            <fieldset>
+                <legend>CREATE</legend>
+                <form action="/create" method="post">
+                    <input type="number" name="rollno" id="rollno" placeholder="Enter Unique Roll No*" required><br>
+                    <input type="text" name="name" id="name" placeholder="Name*"required> <br>
+                    <input type="number" name="age" id="age" placeholder="Age*" required min="0" max="125"><br>
+                    <input type="text" name="email" id="email" placeholder="Email*"required><br>
+                    <input type="text" name="profilepic" id="profile" placeholder="Profile Picture"><br>
+                    <button type="submit" class="btn">Create</button>
+                </form>
+            </fieldset>
+        </div>
+
+        <!-- Read Operation -->
+        <div class="read">
+            <fieldset>
+                <legend>READ</legend>
+                <form action="/read" method="post">
+                    <input type="text" name="rollno" id="id" placeholder="Enter the Roll No"> <br>
+                    <button type="submit" class="btn">Read</button>
+                </form>
+            </fieldset>
+        </div>
+
+        <!-- Update Operation -->
+        <div class="update box">
+            <fieldset>
+                <legend>UPDATE</legend>
+                <form action="/update" method="post">
+                    <input type="number" name="rollno" id="rollno" placeholder="Enter Roll No To Be Updated"><br>
+                    <input type="text" name="name" id="name" placeholder="Name" required> <br>
+                    <input type="number" name="age" id="age" placeholder="Age" required><br>
+                    <input type="text" name="email" id="email" placeholder="Email" required><br>
+                    <input type="text" name="profilepic" id="profile" placeholder="Profile Picture"><br>
+                    <button type="submit" class="btn">Update</button>
+                </form>
+            </fieldset>
+        </div>
+
+        <!-- Delete Operation -->
+        <div class="delete box">
+            <fieldset>
+                <legend>DELETE</legend>
+                <form action="/delete" method="post">
+                    <input type="text" name="rollno" id="id" placeholder="Enter Roll No To Be Deleted"> <br>
+                    <button type="submit" class="btn">Delete</button>
+                </form>
+            </fieldset>
+        </div>
+    </div>
+
+    <!-- All Data Section -->
+    <div class="alldata">
+        <h2>All Data</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Roll No</th>
+                    <th>Name</th>
+                    <th>Age</th>
+                    <th>Email</th>
+                    <th>Profile Picture</th>
+                </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+        <script>
+            // Fetch data from /all and display it in the table
+            fetch('/all')
+            .then(res => res.json())
+            .then(data => {
+                console.log(data);
+                const table = document.querySelector('table tbody');
+                data.forEach(user => {
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td>${user.rollno}</td>
+                        <td>${user.name}</td>
+                        <td>${user.age}</td>
+                        <td>${user.email}</td>
+                        <td><img src="${user.profilepic}" alt="Profile Picture"></td>
+                    `;
+                    table.appendChild(tr);
+                });
+            })
+            .catch(err => console.log(err));
+        </script>
+    </div>
+
+    <script>
+        // Handle URL parameters
+        const url = new URL(window.location.href);
+        const message = url.searchParams.get('message');
+        const name = url.searchParams.get('name');
+        const age = url.searchParams.get('age');
+        const error = url.searchParams.get('error');
+        const rollno = url.searchParams.get('rollno');
+        const email = url.searchParams.get('email');
+        const profilepic = url.searchParams.get('profilepic');
+        const operation = url.searchParams.get('operation');
+        console.log(message); 
+        if (message) {
+            document.querySelector('.msg').style.display = 'block';
+            document.querySelector('.msg').innerHTML = message;
+            document.querySelector('.msg').classList.add('green');
+        }
+        if (name && age && rollno && email) {
+            document.querySelector('#data').innerHTML = `
+                <ul>
+                    <b>${operation}:</b>
+                    <li>Name: ${name}</li>
+                    <li>Age: ${age}</li>
+                    <li>Roll No: ${rollno}</li>
+                    <li>Email: ${email}</li>
+                    <li>Profile Picture: ${profilepic}</li>
+                </ul>
+            `;
+                        // Insert a card at the top of the page with user info
+            // const card = document.createElement('div');
+            // card.classList.add('card');
+            // card.innerHTML = `
+            //  <img src="${profilepic}" alt="Profile Picture">
+            //     <h2>${name}</h2>
+            //     <p>Age: ${age}</p>
+            //     <p>Roll No: ${rollno}</p>
+            //     <p>Email: ${email}</p>
+            // `;
+            //document.body.insertBefore(card, document.querySelector('.operations'));
+
+            
+            if(operation == 'Deleted'){
+                card.style.backgroundColor = 'red'; 
+            }
+            else if(operation == 'Updated'){
+                card.style.backgroundColor = 'green'; 
+            }
+            else if(operation == 'Created'){
+                card.style.backgroundColor = 'blue'; 
+            }
+            if(operation=="READ"){
+                const card = document.createElement('div');
+                card.classList.add('card');
+                card.innerHTML = `
+                <img src="${profilepic}" alt="Profile Picture">
+                <h2>${name}</h2>
+                <p>Age: ${age}</p>
+                <p>Roll No: ${rollno}</p>
+                <p>Email: ${email}</p>
+                `;
+                document.body.insertBefore(card, document.querySelector('.operations'));
+
+            }
+
+
+        }
+        if (error) {
+            document.querySelector('.msg').innerHTML = error;
+            document.querySelector('.msg').classList.remove('green');
+            document.querySelector('.msg').classList.add('red');
+            setTimeout(() => {
+                window.location.href = '/';
+            }, 5000);
+        }
+        // Display none to message after 5 seconds
+        setTimeout(() => {
+            document.querySelector('.msg').style.display = 'none';
+        }, 5000);
+    </script>
+</body>
+</html>
+
+```
 
 ## Activity
 
-
-- Create  new documents in the Collection
-```javascript
-movie.create({movie: 'Inception', year: 2010, rating: 8.8}).then((result) => { console.log(result);});
-
-movie.create({movie: 'The Dark Knight', year: 2008, rating: 9.0}).then((result) => { console.log(result);});
-
- movie.create({movie: 'Interstellar', year: 2014, rating: 8.6}).then((result) => { console.log(result);});
- movie.create({movie: 'Robot', year: 2006, rating: 5.5}).then((result) => { console.log(result);});
- movie.create({movie: 'Robot 2.0', year: 2018, rating: 6.5}).then((result) => { console.log(result);});
- movie.create({movie: 'Tarzan', year: 2020, rating: 5}).then((result) => { console.log(result);});
-// Add more movies
-
-```
-1. Delete Movies with rating 5 
-2. Delete Inception from collection
-3. Delete Movies with rating less than 8.5
+1. Modify the Delete operation to delete the Users By Name
+2. Modify the Update operation to update the Users By Name
+3. Add a new field to the User Schema called "address" and update the Create operation to accept the address field
+4. Add a new field to the User Schema called "phone" and update the Create operation to accept the phone field
 
 
-- activity.js
+## Using MongoDB in the URL SHortner Project
 
-```javascript 
-const mongoose = require('mongoose'); // Mongoose for MongoDB interactions
-const DATABASE = `cec`;
-const COLLECTION = `activity`;
+- Update the code in the URL Shortner Project to use MongoDB instead of the file system to store the URLs
 
 
-// Connecting to MongoDB
-mongoose.connect('mongodb://localhost:27017/'+DATABASE).then(() =>  console.log('Connected to MongoDB'));
+- Link to project: [Express Project](https://github.com/adithyapaib/cecexpress)
 
-// ACTIVITY 3
-
-// Create a new document
-//movie.create({movie: 'Inception', year: 2010, rating: 8.8}).then((result) => { console.log(result);});
-// movie.create({movie: 'The Dark Knight', year: 2008, rating: 9.0}).then((result) => { console.log(result);});
-// movie.create({movie: 'Interstellar', year: 2014, rating: 8.6}).then((result) => { console.log(result);});
-
-// Delete Movies with rating 5 
-// Delete Movies with rating less than 8.5
-
-
-// Define your SCEHMA here
-const activitySchema = new mongoose.Schema({
-    movie: String,
-    year: Number,
-    rating: Number
-});
-
-const movie = mongoose.model(COLLECTION, activitySchema);
-
-// Write your DELETE query here
-// move.delete ..
-
-```
 
 ## License
 This project is licensed under the MIT license. Please see the [LICENSE](LICENSE) file for more information.
