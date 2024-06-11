@@ -13,8 +13,7 @@ mongoose.connect('mongodb://localhost:27017/cec').then(() =>  console.log('Conne
 // A user has a 'name' and an 'age', both fields are required
 const userSchema = new mongoose.Schema({
     name: String,
-    age: Number,
-    email: String
+    age: Number
 });
 
 
