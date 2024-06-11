@@ -17,18 +17,16 @@ This repository contains the code for a workshop on Mongoose and Express JS. The
 - [CODE](#installation)
 - [License](#license)
 
-# READ OPERATION
+# 3. UPDATE OPERATIONS
 
-- Model.find() - Returns all documents that match the query
-- Model.findOne() - Returns the first document that matches the query
-- Usage
-    - Model.find({}).then((docs) => console.log(docs))
-    - EG : User.find({ name: 'Alice' }).then((user) => console.log(user));
+- Model.updateOne()
+- Model.updateMany()
 
 ## CODE USED FOR SECTION 1 
 - index.js
 
 ```javascript
+
 const mongoose = require('mongoose'); // Mongoose for MongoDB interactions
 
 
@@ -50,109 +48,73 @@ const userSchema = new mongoose.Schema({
 const User = mongoose.model(COLLECTION, userSchema);
 
 
-// 2. READ 
-
-// Before we read we need to Add some data to the database
-
-// Adding a new user to the database
-function addRandomUsers(){
-    User.insertMany([
-        { name: 'Alice', age: 25 },
-        { name: 'Bob', age: 30 },
-        { name: 'Charlie', age: 35 },
-        { name: 'David', age: 40 },
-        { name: 'Eve', age: 45 },
-        { name: 'Frank', age: 50 },
-        { name: 'Grace', age: 55 },
-        { name: 'Helen', age: 60 },
-        { name: 'Ivy', age: 65 },
-        { name: 'John', age: 70 }
-    ]).then(() => {
-        console.log('Users added to the database');
-    }).catch((err) => {
-        console.log(err);
-    });
-    
-}
-// COMMENT THIS FUNCTION AFTER FIRST RUN
-//addRandomUsers();
-
-// Reading all users
-console.log("Reading all users");
-User.find({}).then((users) => console.log(users))
-
-// console.log("Reading all users with name Alice");
-// User.find({ name: 'Alice' }).then((user) => console.log(user));
-
-// console.log("Reading all users with age 30");
-// // Reading a user by age
-// User.find({ age: 30 }).then((user) => console.log(user));
-
-// console.log("Reading all users with name Alice and age 25");
-// User.find({ name: 'Alice', age: 25 }).then((user) => console.log(user));
-
-// console.log("Reading all users with age greater than 30");
-// User.find({ age: { $gt: 30 } }).then((user) => console.log(user));
-```
-### ACTIVITY 2
-
-- In the activity Collection 
-    - Write code to find Movies of 2024
-    - Write code to find Movies with 5 Rating
+// 2. UPDATE Operation
 
 
+// Update the user with name 'Sachin' to have age 30
+
+
+// Syntax: Model.updateOne({ <filter> }, { <update> })
+// The first argument is the filter to find the document to update
+// The second argument is the update to be made
+
+//User.create({name: 'Sachin', age: 50}).then((result) => { console.log(result);});
+
+User.updateOne({name: 'Sachin'}, {age: 30}).then((result) => { console.log(result);});
+//User.updateMany({age: 30}, {age: 31}).then((result) => { console.log(result);} );
+
+```   
+
+## Activity
+
+
+- Create a new document
 ```javascript
-const mongoose = require('mongoose'); // Mongoose for MongoDB interactions
+movie.create({movie: 'Inception', year: 2010, rating: 8.8}).then((result) => { console.log(result);});
+
+movie.create({movie: 'The Dark Knight', year: 2008, rating: 9.0}).then((result) => { console.log(result);});
+
+ movie.create({movie: 'Interstellar', year: 2014, rating: 8.6}).then((result) => { console.log(result);});
+```
+1. Update the rating of the movie 'Inception' to 9.2
+2. Update the rating of the movie Interstellar to 10
+
+
+- activity.js
+```javascript 
+const mongoose = require('mongoose'); 
 const DATABASE = `cec`;
 const COLLECTION = `activity`;
-
 
 // Connecting to MongoDB
 mongoose.connect('mongodb://localhost:27017/'+DATABASE).then(() =>  console.log('Connected to MongoDB'));
 
+// ACTIVITY 3
 
+// Create a new document
+//movie.create({movie: 'Inception', year: 2010, rating: 8.8}).then((result) => { console.log(result);});
+// movie.create({movie: 'The Dark Knight', year: 2008, rating: 9.0}).then((result) => { console.log(result);});
+// movie.create({movie: 'Interstellar', year: 2014, rating: 8.6}).then((result) => { console.log(result);});
 
-
-
-
-
-// ACTIVITY 2 
+// Update the rating of the movie 'Inception' to 9.2
+// Update the rating of the movie Interstellar to 10
 
 
 // Define your SCEHMA here
 const activitySchema = new mongoose.Schema({
-    // Write Your SChema Here
-
+    movie: String,
+    year: Number,
+    rating: Number
 });
 
 const movie = mongoose.model(COLLECTION, activitySchema);
 
 
-
-// Find the moveis of year 2024
-// Find the movies with rating 5
-
-// Write your code here
-
-//movie.find ...
-
-
-
-
-
-
-
-
-
-
-```     
-
-
-
-
+// Write your UPDATE query here
+// move.updat ..
+```
 
 ## License
-
 This project is licensed under the MIT license. Please see the [LICENSE](LICENSE) file for more information.
 
 

@@ -19,55 +19,19 @@ const userSchema = new mongoose.Schema({
 const User = mongoose.model(COLLECTION, userSchema);
 
 
-// 2. READ 
-
-// Before we read we need to Add some data to the database
-
-// Adding a new user to the database
-function addRandomUsers(){
-    User.insertMany([
-        { name: 'Alice', age: 25 },
-        { name: 'Bob', age: 30 },
-        { name: 'Charlie', age: 35 },
-        { name: 'David', age: 40 },
-        { name: 'Eve', age: 45 },
-        { name: 'Frank', age: 50 },
-        { name: 'Grace', age: 55 },
-        { name: 'Helen', age: 60 },
-        { name: 'Ivy', age: 65 },
-        { name: 'John', age: 70 }
-    ]).then(() => {
-        console.log('Users added to the database');
-    }).catch((err) => {
-        console.log(err);
-    });
-    
-}
-// COMMENT THIS FUNCTION AFTER FIRST RUN
-//addRandomUsers();
-
-// Reading all users
-console.log("Reading all users");
-User.find({}).then((users) => console.log(users))
-
-// console.log("Reading all users with name Alice");
-// User.find({ name: 'Alice' }).then((user) => console.log(user));
-
-// console.log("Reading all users with age 30");
-// // Reading a user by age
-// User.find({ age: 30 }).then((user) => console.log(user));
-
-// console.log("Reading all users with name Alice and age 25");
-// User.find({ name: 'Alice', age: 25 }).then((user) => console.log(user));
-
-// console.log("Reading all users with age greater than 30");
-// User.find({ age: { $gt: 30 } }).then((user) => console.log(user));
+// 2. UPDATE Operation
 
 
+// Update the user with name 'Sachin' to have age 30
 
 
+// Syntax: Model.updateOne({ <filter> }, { <update> })
+// The first argument is the filter to find the document to update
+// The second argument is the update to be made
 
+//User.create({name: 'Sachin', age: 50}).then((result) => { console.log(result);});
 
-
+User.updateOne({name: 'Sachin'}, {age: 30}).then((result) => { console.log(result);});
+//User.updateMany({age: 30}, {age: 31}).then((result) => { console.log(result);} );
 
 

@@ -12,27 +12,29 @@ mongoose.connect('mongodb://localhost:27017/'+DATABASE).then(() =>  console.log(
 
 
 
-// ACTIVITY 2 
+// ACTIVITY 3
+
+// Create a new document
+//movie.create({movie: 'Inception', year: 2010, rating: 8.8}).then((result) => { console.log(result);});
+// movie.create({movie: 'The Dark Knight', year: 2008, rating: 9.0}).then((result) => { console.log(result);});
+// movie.create({movie: 'Interstellar', year: 2014, rating: 8.6}).then((result) => { console.log(result);});
+
+// Update the rating of the movie 'Inception' to 9.2
+// Update the rating of the movie Interstellar to 10
 
 
 // Define your SCEHMA here
 const activitySchema = new mongoose.Schema({
-    // Write Your SChema Here
-
+    movie: String,
+    year: Number,
+    rating: Number
 });
 
 const movie = mongoose.model(COLLECTION, activitySchema);
 
 
-
-// Find the moveis of year 2024
-// Find the movies with rating 5
-
-// Write your code here
-
-//movie.find ...
-
-
+// Write your UPDATE query here
+// move.updat ..
 
 
 
