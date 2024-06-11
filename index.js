@@ -6,7 +6,7 @@ const COLLECTION = `users`;
 
 // Connecting to MongoDB
 // The database is located at localhost:27017 and the database name is 'test'
-mongoose.connect('mongodb://localhost:27017/cec').then(() =>  console.log('Connected to MongoDB'));
+mongoose.connect('mongodb://localhost:27017/'+DATABASE).then(() =>  console.log('Connected to MongoDB'));
 
 
 // Defining a schema for the 'User' model
