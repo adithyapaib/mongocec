@@ -80,7 +80,7 @@ User.updateOne({name: 'Sachin'}, {age: 30}).then((result) => { console.log(resul
 ## Activity
 
 
-- Create a new document
+- Create a new documents in the Collection
 ```javascript
 movie.create({movie: 'Inception', year: 2010, rating: 8.8}).then((result) => { console.log(result);});
 
