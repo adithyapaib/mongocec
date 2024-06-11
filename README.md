@@ -19,8 +19,20 @@ This repository contains the code for a workshop on Mongoose and Express JS. The
 
 # 3. UPDATE OPERATIONS
 
-- Model.updateOne()
-- Model.updateMany()
+- Model.updateOne() This method updates a single document that matches the filter
+- Model.updateMany() This method updates multiple documents that match the filter
+
+```javascript
+// Update the user with name 'Sachin' to have age 30
+User.updateOne({name: 'Sachin'}, {age: 30}).then((result) => { console.log(result);});
+```
+
+
+```javascript
+// Update the user with age 30 to have age 31
+User.updateMany({age: 30}, {age: 31}).then((result) => { console.log(result);} );
+```
+
 
 ## CODE USED FOR SECTION 1 
 - index.js

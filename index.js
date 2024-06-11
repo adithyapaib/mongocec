@@ -32,6 +32,7 @@ const User = mongoose.model(COLLECTION, userSchema);
 //User.create({name: 'Sachin', age: 50}).then((result) => { console.log(result);});
 
 User.updateOne({name: 'Sachin'}, {age: 30}).then((result) => { console.log(result);});
-//User.updateMany({age: 30}, {age: 31}).then((result) => { console.log(result);} );
+//User.updateMany({age: 30}, {age: 31}).then((result) => { console.log(result);} ); 
 
+User.find({name: 'Sachin'}).then((result) => { console.log(result);});
 
