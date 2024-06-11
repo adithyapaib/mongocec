@@ -1,0 +1,193 @@
+<!--
+This is the main HTML file for the CRUD operations application.
+
+It contains the following sections:
+- Metadata and title
+- Stylesheet link
+- Message section
+- Data input textarea
+- CRUD operations section (Create, Read, Update, Delete)
+- All Data section (table to display data)
+- JavaScript code to fetch data and handle URL parameters
+
+Please note that this is a static HTML file and requires a server-side implementation to handle the CRUD operations and data storage.
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CRUD OPPERTATIONS</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Message Section -->
+    <section class="msg"> 
+    </section>
+
+    <!-- Data Input Textarea -->
+    <fieldset id="data">
+        <legend>LOG</legend>
+    </fieldset>
+
+    <!-- CRUD Operations Section -->
+    <div class="operations">
+        <!-- Create Operation -->
+        <div class="create">
+            <fieldset>
+                <legend>CREATE</legend>
+                <form action="/create" method="post">
+                    <input type="number" name="rollno" id="rollno" placeholder="Enter Unique Roll No*" required><br>
+                    <input type="text" name="name" id="name" placeholder="Name*"required> <br>
+                    <input type="number" name="age" id="age" placeholder="Age*" required min="0" max="125"><br>
+                    <input type="text" name="email" id="email" placeholder="Email*"required><br>
+                    <input type="text" name="profilepic" id="profile" placeholder="Profile Picture"><br>
+                    <button type="submit" class="btn">Create</button>
+                </form>
+            </fieldset>
+        </div>
+
+        <!-- Read Operation -->
+        <div class="read">
+            <fieldset>
+                <legend>READ</legend>
+                <form action="/read" method="post">
+                    <input type="text" name="rollno" id="id" placeholder="Enter the Roll No"> <br>
+                    <button type="submit" class="btn">Read</button>
+                </form>
+            </fieldset>
+        </div>
+
+        <!-- Update Operation -->
+        <div class="update box">
+            <fieldset>
+                <legend>UPDATE</legend>
+                <form action="/update" method="post">
+                    <input type="number" name="rollno" id="rollno" placeholder="Enter Roll No To Be Updated"><br>
+                    <input type="text" name="name" id="name" placeholder="Name" required> <br>
+                    <input type="number" name="age" id="age" placeholder="Age" required><br>
+                    <input type="text" name="email" id="email" placeholder="Email" required><br>
+                    <input type="text" name="profilepic" id="profile" placeholder="Profile Picture"><br>
+                    <button type="submit" class="btn">Update</button>
+                </form>
+            </fieldset>
+        </div>
+
+        <!-- Delete Operation -->
+        <div class="delete box">
+            <fieldset>
+                <legend>DELETE</legend>
+                <form action="/delete" method="post">
+                    <input type="text" name="rollno" id="id" placeholder="Enter Roll No To Be Deleted"> <br>
+                    <button type="submit" class="btn">Delete</button>
+                </form>
+            </fieldset>
+        </div>
+    </div>
+
+    <!-- All Data Section -->
+    <div class="alldata">
+        <h2>All Data</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Roll No</th>
+                    <th>Name</th>
+                    <th>Age</th>
+                    <th>Email</th>
+                    <th>Profile Picture</th>
+                </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+        <script>
+            // Fetch data from /all and display it in the table
+            fetch('/all')
+            .then(res => res.json())
+            .then(data => {
+                console.log(data);
+                const table = document.querySelector('table tbody');
+                data.forEach(user => {
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td>${user.rollno}</td>
+                        <td>${user.name}</td>
+                        <td>${user.age}</td>
+                        <td>${user.email}</td>
+                        <td><img src="${user.profilepic}" alt="Profile Picture"></td>
+                    `;
+                    table.appendChild(tr);
+                });
+            })
+            .catch(err => console.log(err));
+        </script>
+    </div>
+
+    <script>
+        // Handle URL parameters
+        const url = new URL(window.location.href);
+        const message = url.searchParams.get('message');
+        const name = url.searchParams.get('name');
+        const age = url.searchParams.get('age');
+        const error = url.searchParams.get('error');
+        const rollno = url.searchParams.get('rollno');
+        const email = url.searchParams.get('email');
+        const profilepic = url.searchParams.get('profilepic');
+        const operation = url.searchParams.get('operation');
+        console.log(message); 
+        if (message) {
+            document.querySelector('.msg').style.display = 'block';
+            document.querySelector('.msg').innerHTML = message;
+            document.querySelector('.msg').classList.add('green');
+        }
+        if (name && age && rollno && email) {
+            document.querySelector('#data').innerHTML = `
+                <ul>
+                    <b>${operation}:</b>
+                    <li>Name: ${name}</li>
+                    <li>Age: ${age}</li>
+                    <li>Roll No: ${rollno}</li>
+                    <li>Email: ${email}</li>
+                    <li>Profile Picture: ${profilepic}</li>
+                </ul>
+            `;
+                        // Insert a card at the top of the page with user info
+            // const card = document.createElement('div');
+            // card.classList.add('card');
+            // card.innerHTML = `
+            //  <img src="${profilepic}" alt="Profile Picture">
+            //     <h2>${name}</h2>
+            //     <p>Age: ${age}</p>
+            //     <p>Roll No: ${rollno}</p>
+            //     <p>Email: ${email}</p>
+            // `;
+
+            document.body.insertBefore(card, document.querySelector('.operations'));
+            if(operation == 'Deleted'){
+                card.style.backgroundColor = 'red'; 
+            }
+            else if(operation == 'Updated'){
+                card.style.backgroundColor = 'green'; 
+            }
+            else if(operation == 'Created'){
+                card.style.backgroundColor = 'blue'; 
+            }
+
+
+        }
+        if (error) {
+            document.querySelector('.msg').innerHTML = error;
+            document.querySelector('.msg').classList.remove('green');
+            document.querySelector('.msg').classList.add('red');
+            setTimeout(() => {
+                window.location.href = '/';
+            }, 5000);
+        }
+        // Display none to message after 5 seconds
+        setTimeout(() => {
+            document.querySelector('.msg').style.display = 'none';
+        }, 5000);
+    </script>
+</body>
+</html>
