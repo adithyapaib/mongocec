@@ -17,28 +17,28 @@ This repository contains the code for a workshop on Mongoose and Express JS. The
 - [CODE](#installation)
 - [License](#license)
 
-# 3. UPDATE OPERATIONS
+# 3. DELETE Operation
 
-- Model.updateOne() This method updates a single document that matches the filter
-- Model.updateMany() This method updates multiple documents that match the filter
-
-```javascript
-// Update the user with name 'Sachin' to have age 30
-User.updateOne({name: 'Sachin'}, {age: 30}).then((result) => { console.log(result);});
-```
+- Model.deleteOne() - Deletes the first document that matches the filter
+- Model.deleteMany() - Deletes all documents that match the filter
 
 
 ```javascript
-// Update the user with age 30 to have age 31
-User.updateMany({age: 30}, {age: 31}).then((result) => { console.log(result);} );
+// Delete the user with name 'Sachin'
+User.deleteOne({name: 'Sachin'}).then((result) => { console.log(result);} );
+
+// Delete all users with age 30
+User.deleteMany({age: 30}).then((result) => { console.log(result);} );
+
+
 ```
 
 
-## CODE USED FOR SECTION 1 
+
+## CODE USED FOR SECTION 3
 - index.js
 
 ```javascript
-
 const mongoose = require('mongoose'); // Mongoose for MongoDB interactions
 
 
@@ -60,20 +60,24 @@ const userSchema = new mongoose.Schema({
 const User = mongoose.model(COLLECTION, userSchema);
 
 
-// 2. UPDATE Operation
+// 3. DELETE query
 
+User.create({name: 'John', age: 25}).then((result) => { console.log(result);});
+User.create({name: 'Jane', age: 30}).then((result) => { console.log(result);});
+User.create({name: 'Doe', age: 60}).then((result) => { console.log(result);});
 
-// Update the user with name 'Sachin' to have age 30
+// Deleting the user with the name 'John'
+//User.deleteOne({name: 'John'}).then((result) =>  console.log(result));
 
+// Deleting the user with the name 'Jane'
+//User.deleteOne({name: 'Jane'}).then((result) =>  console.log(result)); 
 
-// Syntax: Model.updateOne({ <filter> }, { <update> })
-// The first argument is the filter to find the document to update
-// The second argument is the update to be made
+// Delete one person Age 30
 
-//User.create({name: 'Sachin', age: 50}).then((result) => { console.log(result);});
+//User.deleteOne({age: 30}).then((result) =>  console.log(result));
 
-User.updateOne({name: 'Sachin'}, {age: 30}).then((result) => { console.log(result);});
-//User.updateMany({age: 30}, {age: 31}).then((result) => { console.log(result);} );
+// Deleting users with age greater than 40
+//User.deleteMany({age: {$gt: 40}}).then((result) =>  console.log(result));
 
 ```   
 
@@ -87,16 +91,24 @@ movie.create({movie: 'Inception', year: 2010, rating: 8.8}).then((result) => { c
 movie.create({movie: 'The Dark Knight', year: 2008, rating: 9.0}).then((result) => { console.log(result);});
 
  movie.create({movie: 'Interstellar', year: 2014, rating: 8.6}).then((result) => { console.log(result);});
+ movie.create({movie: 'Robot', year: 2006, rating: 5.5}).then((result) => { console.log(result);});
+ movie.create({movie: 'Robot 2.0', year: 2018, rating: 6.5}).then((result) => { console.log(result);});
+ movie.create({movie: 'Tarzan', year: 2020, rating: 5}).then((result) => { console.log(result);});
+// Add more movies
+
 ```
-1. Update the rating of the movie 'Inception' to 9.2
-2. Update the rating of the movie Interstellar to 10
+1. Delete Movies with rating 5 
+2. Delete Inception from collection
+3. Delete Movies with rating less than 8.5
 
 
 - activity.js
+
 ```javascript 
-const mongoose = require('mongoose'); 
+const mongoose = require('mongoose'); // Mongoose for MongoDB interactions
 const DATABASE = `cec`;
 const COLLECTION = `activity`;
+
 
 // Connecting to MongoDB
 mongoose.connect('mongodb://localhost:27017/'+DATABASE).then(() =>  console.log('Connected to MongoDB'));
@@ -108,8 +120,8 @@ mongoose.connect('mongodb://localhost:27017/'+DATABASE).then(() =>  console.log(
 // movie.create({movie: 'The Dark Knight', year: 2008, rating: 9.0}).then((result) => { console.log(result);});
 // movie.create({movie: 'Interstellar', year: 2014, rating: 8.6}).then((result) => { console.log(result);});
 
-// Update the rating of the movie 'Inception' to 9.2
-// Update the rating of the movie Interstellar to 10
+// Delete Movies with rating 5 
+// Delete Movies with rating less than 8.5
 
 
 // Define your SCEHMA here
@@ -121,9 +133,9 @@ const activitySchema = new mongoose.Schema({
 
 const movie = mongoose.model(COLLECTION, activitySchema);
 
+// Write your DELETE query here
+// move.delete ..
 
-// Write your UPDATE query here
-// move.updat ..
 ```
 
 ## License

@@ -19,8 +19,8 @@ mongoose.connect('mongodb://localhost:27017/'+DATABASE).then(() =>  console.log(
 // movie.create({movie: 'The Dark Knight', year: 2008, rating: 9.0}).then((result) => { console.log(result);});
 // movie.create({movie: 'Interstellar', year: 2014, rating: 8.6}).then((result) => { console.log(result);});
 
-// Update the rating of the movie 'Inception' to 9.2
-// Update the rating of the movie Interstellar to 10
+// Delete Movies with rating 5 
+// Delete Movies with rating less than 8.5
 
 
 // Define your SCEHMA here
@@ -33,8 +33,8 @@ const activitySchema = new mongoose.Schema({
 const movie = mongoose.model(COLLECTION, activitySchema);
 
 
-// Write your UPDATE query here
-// move.updat ..
+// Write your DELETE query here
+// move.delet ..
 
 
 

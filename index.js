@@ -19,20 +19,21 @@ const userSchema = new mongoose.Schema({
 const User = mongoose.model(COLLECTION, userSchema);
 
 
-// 2. UPDATE Operation
+// 3. DELETE query
 
+User.create({name: 'John', age: 25}).then((result) => { console.log(result);});
+User.create({name: 'Jane', age: 30}).then((result) => { console.log(result);});
+User.create({name: 'Doe', age: 60}).then((result) => { console.log(result);});
 
-// Update the user with name 'Sachin' to have age 30
+// Deleting the user with the name 'John'
+//User.deleteOne({name: 'John'}).then((result) =>  console.log(result));
 
+// Deleting the user with the name 'Jane'
+//User.deleteOne({name: 'Jane'}).then((result) =>  console.log(result)); 
 
-// Syntax: Model.updateOne({ <filter> }, { <update> })
-// The first argument is the filter to find the document to update
-// The second argument is the update to be made
+// Delet Age 25
 
-//User.create({name: 'Sachin', age: 50}).then((result) => { console.log(result);});
+//User.deleteOne({age: 30}).then((result) =>  console.log(result));
 
-User.updateOne({name: 'Sachin'}, {age: 30}).then((result) => { console.log(result);});
-//User.updateMany({age: 30}, {age: 31}).then((result) => { console.log(result);} ); 
-
-User.find({name: 'Sachin'}).then((result) => { console.log(result);});
-
+// Deleting users with age greater than 40
+//User.deleteMany({age: {$gt: 40}}).then((result) =>  console.log(result));
