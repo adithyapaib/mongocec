@@ -102,7 +102,7 @@ const adithya = new User({ name: 'Adithya',age: 22});
 adithya.save()
 
 ```
-# ACTIVITY 1
+### ACTIVITY 1
 
 - Create a new Collection activity in the MongoDB database
 - Create a new Schema for the activity
