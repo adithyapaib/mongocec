@@ -4,7 +4,7 @@ const COLLECTION = `activity`;
 
 
 // Connecting to MongoDB
-mongoose.connect('mongodb://localhost:27017/cec').then(() =>  console.log('Connected to MongoDB'));
+mongoose.connect('mongodb://localhost:27017/'+DATABASE).then(() =>  console.log('Connected to MongoDB'));
 
 
 
@@ -12,12 +12,7 @@ mongoose.connect('mongodb://localhost:27017/cec').then(() =>  console.log('Conne
 
 
 
-// ACTIVITY 1 
-// CREATE a new SCHEMA for a movie database with the following fields:
-// title, year, rating, actor
-// And Insert 2 new movie documents into the database
-
-
+// ACTIVITY 2 
 
 
 // Define your SCEHMA here
@@ -29,10 +24,13 @@ const activitySchema = new mongoose.Schema({
 const movie = mongoose.model(COLLECTION, activitySchema);
 
 
-// Insert 2 new movie documents into the database
+
+// Find the moveis of year 2024
+// Find the movies with rating 5
+
 // Write your code here
 
-//movie.cre
+//movie.find ...
 
 
 

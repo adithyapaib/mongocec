@@ -14,53 +14,16 @@ This repository contains the code for a workshop on Mongoose and Express JS. The
 
 ## Table of Contents
 
-- [Installation](#installation)
+- [CODE](#installation)
 - [License](#license)
 
-## Installation
+# READ OPERATION
 
-To get started with the workshop, follow these steps:
-
-1. Clone this repository to your local machine. Open your terminal and run the following command:
-
-    - Link to Donload Git: [Git](https://git-scm.com/downloads)
-
-    ```bash
-    git clone https://github.com/adithyapaib/mongocec
-    ```
-    - Configure the git user name and email using the following commands:
-    ```bash
-    git config --global user.name "Your Name"
-    git config --global user.email "adithy@email.com"
-    ```
-
-    Install MongoDB on your local machine. You can download the installer from the following link:
-    [MongoDB](https://fastdl.mongodb.org/windows/mongodb-windows-x86_64-7.0.11-signed.msi)
-
-2. Navigate to the project directory:
-
-    ```bash
-    cd mongocec
-    ```
-
-3. Install the required dependencies:
-
-    ```bash
-    npm install
-    ```
-
-4. Install Nodemon globally:
-
-    ```bash
-    npm install -g nodemon
-    ```
-4. Start the application:
-
-    ```bash
-   nodemon index.js
-    ```
-5. Open your browser and navigate to `http://localhost:3000/` to see the application in action.
-
+- Model.find() - Returns all documents that match the query
+- Model.findOne() - Returns the first document that matches the query
+- Usage
+    - Model.find({}).then((docs) => console.log(docs))
+    - EG : User.find({ name: 'Alice' }).then((user) => console.log(user));
 
 ## CODE USED FOR SECTION 1 
 - index.js
@@ -73,41 +36,118 @@ const DATABASE = `cec`;
 const COLLECTION = `users`;
 
 // Connecting to MongoDB
-// The database is located at localhost:27017 and the database name is 'test'
-mongoose.connect('mongodb://localhost:27017/cec').then(() =>  console.log('Connected to MongoDB'));
-
+mongoose.connect('mongodb://localhost:27017/'+DATABASE).then(() =>  console.log('Connected to MongoDB'));
 
 
 // Defining a schema for the 'User' model
 // A user has a 'name' and an 'age', both fields are required
 const userSchema = new mongoose.Schema({
     name: String,
-    age: Number,
-    email: String
+    age: Number
 });
 
-
-// Creating the 'User' model using the 'userSchema'
-// The collection in the MongoDB database will be 'test'
+// Creating a model for the 'User' schema
 const User = mongoose.model(COLLECTION, userSchema);
 
-//1. CREATE OPERATION
-// Creating a new user using Create method
-User.create({ name: 'John Doe', age: 25 }).then((user) => console.log(user))
 
+// 2. READ 
 
-// Creating a new user using Save method
+// Before we read we need to Add some data to the database
 
-const adithya = new User({ name: 'Adithya',age: 22});
-adithya.save()
+// Adding a new user to the database
+function addRandomUsers(){
+    User.insertMany([
+        { name: 'Alice', age: 25 },
+        { name: 'Bob', age: 30 },
+        { name: 'Charlie', age: 35 },
+        { name: 'David', age: 40 },
+        { name: 'Eve', age: 45 },
+        { name: 'Frank', age: 50 },
+        { name: 'Grace', age: 55 },
+        { name: 'Helen', age: 60 },
+        { name: 'Ivy', age: 65 },
+        { name: 'John', age: 70 }
+    ]).then(() => {
+        console.log('Users added to the database');
+    }).catch((err) => {
+        console.log(err);
+    });
+    
+}
+// COMMENT THIS FUNCTION AFTER FIRST RUN
+//addRandomUsers();
 
+// Reading all users
+console.log("Reading all users");
+User.find({}).then((users) => console.log(users))
+
+// console.log("Reading all users with name Alice");
+// User.find({ name: 'Alice' }).then((user) => console.log(user));
+
+// console.log("Reading all users with age 30");
+// // Reading a user by age
+// User.find({ age: 30 }).then((user) => console.log(user));
+
+// console.log("Reading all users with name Alice and age 25");
+// User.find({ name: 'Alice', age: 25 }).then((user) => console.log(user));
+
+// console.log("Reading all users with age greater than 30");
+// User.find({ age: { $gt: 30 } }).then((user) => console.log(user));
 ```
-### ACTIVITY 1
+### ACTIVITY 2
 
-- Create a new Collection activity in the MongoDB database
-- Create a new Schema for the activity
-- Create a new Model for the activity
-- Create a new activity using the Create method
+- In the activity Collection 
+    - Write code to find Movies of 2024
+    - Write code to find Movies with 5 Rating
+
+
+```javascript
+const mongoose = require('mongoose'); // Mongoose for MongoDB interactions
+const DATABASE = `cec`;
+const COLLECTION = `activity`;
+
+
+// Connecting to MongoDB
+mongoose.connect('mongodb://localhost:27017/'+DATABASE).then(() =>  console.log('Connected to MongoDB'));
+
+
+
+
+
+
+
+// ACTIVITY 2 
+
+
+// Define your SCEHMA here
+const activitySchema = new mongoose.Schema({
+    // Write Your SChema Here
+
+});
+
+const movie = mongoose.model(COLLECTION, activitySchema);
+
+
+
+// Find the moveis of year 2024
+// Find the movies with rating 5
+
+// Write your code here
+
+//movie.find ...
+
+
+
+
+
+
+
+
+
+
+```     
+
+
 
 
 
